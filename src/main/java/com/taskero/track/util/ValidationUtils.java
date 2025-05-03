@@ -4,12 +4,11 @@ import com.taskero.track.model.ProjectStatus;
 import com.taskero.track.model.User;
 import com.taskero.track.repository.ProjectRepository;
 import com.taskero.track.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 @Component
 public class ValidationUtils {
@@ -39,7 +38,7 @@ public class ValidationUtils {
 
 	public void validateManagerId(String managerId) {
 		if (managerId == null)
-			return; // no manager assigned is allowed
+			throw new IllegalArgumentException("Manager id cannot be null");
 
 		// Check user exists
 		if (!userRepository.existsById(managerId)) {
