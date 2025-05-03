@@ -30,7 +30,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                     // Only users with ADMIN role can access /api/auth/register
                     .requestMatchers("/api/auth/register").hasRole("ADMIN")
-                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                    .requestMatchers("/api/auth/login","/swagger-ui/**", "/v3/api-docs/**").permitAll()
                     // All other endpoints require authentication
                     .anyRequest().authenticated()
             )

@@ -1,9 +1,12 @@
 package com.taskero.track.model;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.couchbase.core.mapping.Document;
+import org.springframework.data.couchbase.core.mapping.Field;
 import org.springframework.data.couchbase.core.mapping.id.GeneratedValue;
 import org.springframework.data.couchbase.core.mapping.id.GenerationStrategy;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Document
@@ -14,7 +17,8 @@ public class User {
     private String username;
     private String email;
     private String password;
-    private List<UserRole> listRoles;
+	@Field("listRoles")
+    private List<UserRole> listRoles = new ArrayList<>();
     // getters, setters, constructors
 
     

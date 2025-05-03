@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -50,7 +51,7 @@ public class AuthController {
 
         // Validate roles and list roles
         
-        List<UserRole> listRoles = null;
+        List<UserRole> listRoles = new ArrayList<>();
         for (String roleStr : request.getRoles()) {
         	Optional<UserRole> role = UserRole.tryParse(roleStr);
         	if(!role.isPresent()) {
