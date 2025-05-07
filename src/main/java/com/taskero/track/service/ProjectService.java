@@ -2,6 +2,7 @@ package com.taskero.track.service;
 
 import com.taskero.track.dto.ProjectInputRequestDTO;
 import com.taskero.track.dto.ProjectResponseDTO;
+import com.taskero.track.exception.HttpCodeBasedException;
 import com.taskero.track.model.Project;
 import com.taskero.track.model.ProjectStatus;
 import com.taskero.track.repository.ProjectRepository;
@@ -42,10 +43,10 @@ public class ProjectService {
 
     public ProjectResponseDTO createProject(ProjectInputRequestDTO request, Authentication auth) throws BadRequestException {
         if (!RoleUtils.isAdmin(auth)) {
-            throw new AccessDeniedException("Only admins can create projects");
+            throw new HttpCodeBasedException.ForbiddenException("Only admins can create projects");
         }
 
-        validationUtils.validateManagerId(request.getManagerId());
+        validationUtils.validateManagerId(request.getManagerId(), auth);
 
         String key;
         if (request.isAutoGenerateKey()) {
@@ -56,7 +57,7 @@ public class ProjectService {
         }
 
         if (projectRepository.existsByName(request.getName())) {
-            throw new BadRequestException(String.format("A project with the name %s already exists", request.getName()));
+            throw new HttpCodeBasedException.BadRequestException(String.format("A project with the name %s already exists", request.getName()));
         }
 
         Project project = new Project.ProjectBuilder()
@@ -103,7 +104,7 @@ public class ProjectService {
 
     public ProjectResponseDTO updateProject(String id, ProjectInputRequestDTO request, Authentication auth) {
         Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new HttpCodeBasedException.ResourceNotFoundException("Project not found"));
 
         String currentUserId = auth.getName();
         
@@ -111,14 +112,14 @@ public class ProjectService {
         boolean isCurrentManager = project.getManagerId() != null && project.getManagerId().equals(currentUserId);
 
         if (project.getStatus() == ProjectStatus.ARCHIVED) {
-        	throw new IllegalStateException("Archived projects cannot be updated");
+        	throw new HttpCodeBasedException.BadRequestException("Archived projects cannot be updated");
         	
             // TODO : Allow admin to unarchive by setting status back to INPROGRESS
         }
         
 
         if (!isAdmin && !isCurrentManager) {
-            throw new AccessDeniedException("Only admins or the manager can update the project");
+            throw new HttpCodeBasedException.ForbiddenException("Only admins or the manager can update the project");
         }
         
         if (request.getStatus() != null) {
@@ -130,7 +131,7 @@ public class ProjectService {
 
         // can only change managerId if new managerId is a valid manager
         if (request.getManagerId() != null && !request.getManagerId().equals(project.getManagerId())) {
-            validationUtils.validateManagerId(request.getManagerId());
+            validationUtils.validateManagerId(request.getManagerId(), auth);
             project.setManagerId(request.getManagerId());
         }
         

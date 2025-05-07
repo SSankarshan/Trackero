@@ -71,6 +71,10 @@ public class User {
 	public void setRoles(List<UserRole> roles) {
 		this.listRoles = roles;
 	}
+
+	public boolean hasRole(String stRole) {
+		return this.getRoles().stream().anyMatch(role -> role.name().equalsIgnoreCase(stRole));
+	}
     
     
 }
