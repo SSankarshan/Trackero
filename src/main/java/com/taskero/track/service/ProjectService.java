@@ -8,11 +8,10 @@ import com.taskero.track.repository.ProjectRepository;
 import com.taskero.track.util.ProjectKeyGenerator;
 import com.taskero.track.util.RoleUtils;
 import com.taskero.track.util.ValidationUtils;
-
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,7 +40,7 @@ public class ProjectService {
         return dto;
     }
 
-    public ProjectResponseDTO createProject(ProjectInputRequestDTO request, Authentication auth) {
+    public ProjectResponseDTO createProject(ProjectInputRequestDTO request, Authentication auth) throws BadRequestException {
         if (!RoleUtils.isAdmin(auth)) {
             throw new AccessDeniedException("Only admins can create projects");
         }
@@ -54,6 +53,10 @@ public class ProjectService {
         } else {
         	validationUtils.validateProjectKey(request.getKey(), true, projectRepository);
             key = request.getKey().toUpperCase();
+        }
+
+        if (projectRepository.existsByName(request.getName())) {
+            throw new BadRequestException(String.format("A project with the name %s already exists", request.getName()));
         }
 
         Project project = new Project.ProjectBuilder()

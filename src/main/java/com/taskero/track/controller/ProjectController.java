@@ -3,6 +3,7 @@ package com.taskero.track.controller;
 import com.taskero.track.dto.ProjectInputRequestDTO;
 import com.taskero.track.dto.ProjectResponseDTO;
 import com.taskero.track.service.ProjectService;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -22,7 +23,13 @@ public class ProjectController {
     public ResponseEntity<ProjectResponseDTO> createProject(
             @RequestBody ProjectInputRequestDTO request,
             Authentication auth) {
-        ProjectResponseDTO createdProject = projectService.createProject(request, auth);
+        ProjectResponseDTO createdProject;
+        try {
+            createdProject = projectService.createProject(request, auth);
+        } catch (BadRequestException e) {
+            throw new RuntimeException(e);
+        }
+
         return ResponseEntity.ok(createdProject);
     }
 

@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface ProjectRepository extends CouchbaseRepository<Project, String> {
     Optional<Project> findByKey(String key);
     boolean existsByKey(String key);
+    boolean existsByName(String name);
 }

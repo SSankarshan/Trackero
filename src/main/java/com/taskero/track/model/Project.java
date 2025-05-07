@@ -6,7 +6,6 @@ import org.springframework.data.couchbase.core.mapping.id.GeneratedValue;
 import org.springframework.data.couchbase.core.mapping.id.GenerationStrategy;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Document
 public class Project {
@@ -20,7 +19,9 @@ public class Project {
     private LocalDateTime endDate;
     private ProjectStatus status;
     private String managerId;
-    
+
+    private Project() {
+    }
  // Private constructor to force use of builder
     private Project(ProjectBuilder builder) {
         this.key = builder.key;
