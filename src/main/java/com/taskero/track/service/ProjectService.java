@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 @Service
 public class ProjectService {
 
+    private static final int MAX_PROJECT_DISCRIPTION_LEN = 5000;
+    private static final int MAX_PROJECT_NAME_LEN = 10;
     @Autowired
     private ProjectRepository projectRepository;
     
@@ -47,6 +49,9 @@ public class ProjectService {
         }
 
         validationUtils.validateManagerId(request.getManagerId(), auth);
+
+        validationUtils.validateInputSize("description", request.getDescription(), MAX_PROJECT_DISCRIPTION_LEN);
+        validationUtils.validateInputSize("name", request.getName(), MAX_PROJECT_NAME_LEN);
 
         String key;
         if (request.isAutoGenerateKey()) {
@@ -125,6 +130,9 @@ public class ProjectService {
         if (request.getStatus() != null) {
             validationUtils.validateStatusTransition(project.getStatus(), request.getStatus());
         }
+
+        validationUtils.validateInputSize("description", request.getDescription(), MAX_PROJECT_DISCRIPTION_LEN);
+        validationUtils.validateInputSize("name", request.getName(), MAX_PROJECT_NAME_LEN);
 
         if (request.getDescription() != null) project.setDescription(request.getDescription());
         if (request.getStatus() != null) project.setStatus(request.getStatus());

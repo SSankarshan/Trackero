@@ -1,5 +1,7 @@
 package com.taskero.track.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -13,11 +15,14 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     // Handling all BaseCustomException and its subclasses
     @ExceptionHandler(BaseCustomException.class)
     public ResponseEntity<Map<String, Object>> handleCustomException(BaseCustomException ex, WebRequest request) {
         ErrorCode errorCode = ex.getErrorCode();
 
+        logger.error("Error occurred: {}", ex.getMessage(), ex);
         // Build the response body
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", System.currentTimeMillis());
@@ -33,6 +38,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, Object>> handleJsonParseError(HttpMessageNotReadableException ex, WebRequest request) {
+        logger.error("Error occurred: {}", ex.getMessage(), ex);
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", System.currentTimeMillis());
         body.put("status", HttpStatus.BAD_REQUEST.value());
@@ -47,6 +53,7 @@ public class GlobalExceptionHandler {
     // Handling generic exception (internal server error)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleInternalServerError(Exception ex, WebRequest request) {
+        logger.error("Error occurred: {}", ex.getMessage(), ex);
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", System.currentTimeMillis());
         body.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());

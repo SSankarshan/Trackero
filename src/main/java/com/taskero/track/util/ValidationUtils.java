@@ -94,4 +94,10 @@ public class ValidationUtils {
 		}
 	}
 
+	public void validateInputSize(String field, String input, int size) {
+		if (input.length() > size) {
+			throw new HttpCodeBasedException.BadRequestException("Input length is too big for field " + field + ". Limit for the field is " + size);
+		}
+	}
+
 }
